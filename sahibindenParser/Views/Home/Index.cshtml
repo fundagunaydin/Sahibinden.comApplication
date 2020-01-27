@@ -1,0 +1,487 @@
+﻿
+<html>
+<head>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="~/Content/sahibinden.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> <!--Bulma cağırılan yer-->
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script><!-- Font awesome cagırılan yer-->
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.12.0/build/alertify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script> <!--SweetAlert Kütüphane-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        .cursor {
+            cursor: pointer;
+        }
+
+        .filters {
+            margin-top: 25px;
+        }
+
+        .selectors {
+            margin-left: 8px;
+            margin-top: 4px;
+        }
+
+        .labels {
+            margin-left: 13px;
+            margin-top: 2px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        .textbox {
+            width: 45%;
+        }
+
+        .leftmain {
+            max-width: 350px;
+            z-index: 100000;
+        }
+
+        .details {
+            display: none;
+        }
+
+        #map {
+            position: fixed !important; /* Harita sabitleme */
+            height: 100vh !important; /*%100 yatay */
+            width: 100vw !important; /*%100 dikey */
+        }
+       
+        .scrollFix {
+            line-height: 1.35;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .checksize {
+            margin-left: 30px;
+            bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Bulma Css Arama Cubugu-->
+    <div class="container is-pulled-left leftmain">
+        <div class="notification">
+            <div class="field has-addons">
+                <span id="filter" class="cursor">
+                    <a class="button is-static">
+                        <i class="fas fa-list"></i><!-- Icon Font Awesome-->
+                    </a>
+                </span>
+                <div class="control">
+                    <p class="control has-icons-left">
+                        <input id="url" class="input" type="text" placeholder="Örn:audi">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-globe"></i><!-- Icon Font Awesome-->
+                        </span>
+                    </p>
+                </div>
+                <div class="control">
+                    <a id="search" class="button is-info">
+                        <i class="fas fa-search"></i> <!-- Icon Font Awesome-->
+                    </a>
+
+                </div>
+                <br />
+
+
+            </div>
+            <label class="checkbox checksize">
+                <input id="urlcheck" type="checkbox">
+                URL
+            </label>
+            <div class="details">
+                <p class="control">
+                    <label class="labels">İlan Sayısı</label>
+                    <div class="field">
+                        <div class="control">
+                            <input id="count" class="input selectors" type="text" placeholder="İlan Sayısı">
+
+                        </div>
+                    </div>
+                </p>
+                <p class="control">
+                    <label class="labels">Sıralama</label>
+                    <div class="select is-fullwidth">
+                        <select id="sort" class="selectors">
+                            <option>Gelişmiş Sıralama</option>
+                            <option value="sorting=price_desc">Fiyata göre (Önce en yüksek)</option>
+                            <option value="sorting=price_asc">Fiyata göre (Önce en düşük)</option>
+                            <option value="sorting=date_desc">Tarihe göre (Önce en yeni ilan)</option>
+                            <option value="sorting=date_asc">Tarihe göre (Önce en eski ilan)</option>
+                            <option value="km-nu_asc">Km'ye göre (Önce en düşük)</option>
+                            <option value="km-nu_desc">Km'ye göre (Önce en yüksek)</option>
+                            <option value="yil-nu_asc">Yıla göre (Önce en eski)</option>
+                            <option value="yil-nu_desc">Yıla göre (Önce en yeni)</option>
+                        </select>
+                    </div>
+                </p><br />
+                <p class="control">
+                    <label class="labels">Renk</label>
+                    <div class="select is-fullwidth">
+                        <select id="color" class="selectors">
+                            <option>Tümü</option>
+                            <option value="a3=33613">Kırmızı</option>
+                            <option value="a3=33616">Siyah</option>
+                            <option value="a3=33611">Beyaz</option>
+                            <option value="a3=33610">Mavi</option>
+                            <option value="a3=33612">Gri</option>
+                        </select>
+                    </div>
+                </p>
+                <br>
+                <p class="control">
+                    <label class="labels">Yıl</label>
+                    <div class="field">
+                        <div class="control">
+                            <input id="yearmin" class="input selectors textbox" type="number" placeholder="Min">
+                            <input id="yearmax" class="input selectors textbox" type="number" placeholder="Max">
+                        </div>
+                    </div>
+                </p>
+                <p class="control">
+                    <label class="labels">KM</label>
+                    <div class="field">
+                        <div class="control">
+                            <input id="kmmin" class="input selectors textbox" type="number" placeholder="Min">
+                            <input id="kmmax" class="input selectors textbox" type="number" placeholder="Max">
+                        </div>
+                    </div>
+                </p>
+                <p class="control">
+                    <label class="labels">Fiyat</label>
+                    <div class="field">
+                        <div class="control">
+                            <input id="pricemin" class="input selectors textbox" type="number" placeholder="Min.Fiyat">
+                            <input id="pricemax" class="input selectors textbox" type="number" placeholder="Max.Fiyat">
+                        </div>
+                    </div>
+                </p>
+
+            </div>
+        </div>
+    </div>
+    <!--Bulma arama cubugu bitis-->
+    <!-- Harita-->
+    <div id="map"> </div>
+    <!-- Harita Bitis-->
+</body>
+</html>
+<script>
+//----------------------------------------------------------------------------------------------------------------------------------------
+    // Harita ve Gerekli Değişkenleri Tanımlandıgı kısım
+    
+    var map;
+    var ext;
+    var gmarker=[];
+    function initMap() {
+       // var geocoder = new google.maps.Geocoder();
+       // var myLatlng = new google.maps.LatLng(38.970504, 35.284387);
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 38.970504, lng: 35.284387 },
+            zoom: 7
+        });
+    }
+ //----------------------------------------------------------------------------------------------------------------------------------------
+    
+    $("#search").click(function () {
+        var urlCheck;
+        if ($('#urlcheck').is(':checked')) {
+             urlCheck = true;
+        }
+        else {
+            urlCheck = false;
+        }
+        
+      var filter=getFilter();
+        
+             
+        $(".details").css("display", "none"); 
+     
+        DeleteMarkers(); // Ekranda Olan Markerları Sil
+        var count = parseInt($("#count").val().trim());// String olarak aldıgımız input değerini Int çevirme işlemi.
+
+        if (isNaN(count)) {  // Uyarı
+            Swal.fire({
+                title: 'Hata',
+                text: 'Lütfen İlan Sayısı Giriniz.',
+                icon: 'info',
+                confirmButtonText: 'Ok'
+            })
+            $(".details").css("display", "block"); // İlan sayısı girilmediyse İlan sayısı penceresini göster.
+        }
+        var url = $("#url").val();
+        paging(count);
+        ext = ext + filter; // Filterdan alınan değerleri url sonuna ekler.
+      var infowindow = new google.maps.InfoWindow({   //Tıklanınca Çıkan İnfo Penceresi 
+          content: '',//Content Ilkte Bos
+          maxWidth: 800 , // infowindows genislik için yapıldı.
+        
+        });
+    if (count < 50) {
+
+        $.post("/Parser/getMapLocations", { url: url + ext, urlCheck: urlCheck }, function (parse) {
+            if (!parse) { // Uyarı
+                Swal.fire({
+                    title: 'Hata!',
+                    text: 'Girilen ilan bulunamadı.Lütfen Kontrol Ediniz.',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                })
+            }
+
+            for (var a = 0; a < count; a++) {
+         
+                let contentString = '<table id="searchResultsTable" class="scrollFix">' +
+                    '<thead><tr><td class="searchResultsFirstColumn">Resim</td>' +
+                    '<td>Seri</td><td>Model</td><td class="searchResultsTitleFullWidth">İlan Başlığı</td><td nowrap="">Yıl</a></td>' +
+                    '<td nowrap="">KM</a></td><td>Renk</td><td class="searchResultsPriceHeader" nowrap="">Fiyat</a></td>' +
+                    '<td class="searchResultsDateHeader" nowrap="">İlan Tarihi</a></td>' +
+                    '<td class="searchResultsLastColumn searchResultsLocationHeader" nowrap="">İl / İlçe</a></td></tr></thead>' +
+                    '<tbody class="searchResultsRowClass"><tr class="searchResultsItem">' +
+                    '<td class="searchResultsLargeThumbnail">' + ' <a href="https://www.sahibinden.com' + parse[a].Url + '" target="_blank">' +
+                    '<img src="' + parse[a].Resim + '"></a>' + '</td><td class="searchResultsTagAttributeValue">' + parse[a].Seri + '</td>' +
+                    '<td class="searchResultsTagAttributeValue">' + parse[a].Model + '</td>' +
+                    '<td class="searchResultsTitleValue ">' +
+                    '<a class="classifiedTitle" href="https://www.sahibinden.com' + parse[a].Url + '" target="_blank">' + parse[a].Baslik + '</a></td>' +
+                    '<td class="searchResultsAttributeValue">' + parse[a].Yil + '</td>' +
+                    '<td class="searchResultsAttributeValue">' + parse[a].Km + '</td>' +
+                    '<td class="searchResultsAttributeValue">' + parse[a].Renk + '</td>' +
+                    '<td class="searchResultsPriceValue"><div>' + parse[a].Fiyat + '</div></td>' +
+                    '<td class="searchResultsDateValue"><span>' + parse[a].Ilan_Tarihi + '</span></td>' +
+                    '<td class="searchResultsLocationValue">' + parse[a].Il_Ilce.replace("+", "/") + '</td>' +
+                    '</tr></tbody></table>';
+
+                $.get('https://geocoder.api.here.com/6.2/geocode.json?searchtext=' + parse[a].Il_Ilce + '&app_id=Lm5PxTEtrP2plc8neSdA&app_code=tM5YcBFR0faZRyZbAWTAuQ', function (data) {
+                    var myLatlng = new google.maps.LatLng(data.Response.View[0].Result[0].Location.DisplayPosition.Latitude, data.Response.View[0].Result[0].Location.DisplayPosition.Longitude);
+
+                    var marker = new google.maps.Marker({
+                        position: myLatlng
+                    });
+                    marker.setMap(map);
+                    gmarker.push(marker);
+                    marker.addListener('click', function (event) {
+                        infowindow.close();
+                        infowindow.setContent(contentString);
+                        infowindow.open(map, marker);
+                    });
+                })
+            }
+        })
+            .done(function (data) {
+                 
+                $("#map").css("display", "block"); // harita ortamaya cıkma
+            });
+        
+            
+            
+    } else {
+        var y = 0;
+        var loopUrl = counterNumber(count);
+        for (var z = 0; z < loopUrl[0]; z++) {
+
+            $.post("/Parser/getMapLocations", { url: url + "?pagingOffset=" + z * 50 + "&pagingSize=50" + filter, urlCheck: urlCheck }, function (data) {
+                if (!data) {
+                    Swal.fire({
+                        title: 'Hata!',
+                        text: 'Girilen ilan bulunamadı.Lütfen Kontrol Ediniz.',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    })                }
+
+                for (let json of data) {
+
+                    let contentString = '<table id="searchResultsTable" class="">' +
+                        '<thead><tr><td class="searchResultsFirstColumn">Resim</td>' +
+                        '<td>Seri</td><td>Model</td><td class="searchResultsTitleFullWidth">İlan Başlığı</td><td nowrap="">Yıl</a></td>' +
+                        '<td nowrap="">KM</a></td><td>Renk</td><td class="searchResultsPriceHeader" nowrap="">Fiyat</a></td>' +
+                        '<td class="searchResultsDateHeader" nowrap="">İlan Tarihi</a></td>' +
+                        '<td class="searchResultsLastColumn searchResultsLocationHeader" nowrap="">İl / İlçe</a></td></tr></thead>' +
+                        '<tbody class="searchResultsRowClass"><tr class="searchResultsItem">' +
+                        '<td class="searchResultsLargeThumbnail">' + ' <a href="https://www.sahibinden.com' + json.Url + '" target="_blank">' +
+                        '<img src="' + json.Resim + '"></a>' + '</td><td class="searchResultsTagAttributeValue">' + json.Seri + '</td>' +
+                        '<td class="searchResultsTagAttributeValue">' + json.Model + '</td>' +
+                        '<td class="searchResultsTitleValue ">' +
+                        '<a class="classifiedTitle" href="https://www.sahibinden.com' + json.Url + '" target="_blank">' + json.Baslik + '</a></td>' +
+                        '<td class="searchResultsAttributeValue">' + json.Yil + '</td>' +
+                        '<td class="searchResultsAttributeValue">' + json.Km + '</td>' +
+                        '<td class="searchResultsAttributeValue">' + json.Renk + '</td>' +
+                        '<td class="searchResultsPriceValue"><div>' + json.Fiyat + '</div></td>' +
+                        '<td class="searchResultsDateValue"><span>' + json.Ilan_Tarihi + '</span></td>' +
+                        '<td class="searchResultsLocationValue">' + json.Il_Ilce.replace("+", "/") + '</td>' +
+                        '</tr></tbody></table>';
+
+
+                    $.get('https://geocoder.api.here.com/6.2/geocode.json?searchtext=' + json.Il_Ilce + '&app_id=Lm5PxTEtrP2plc8neSdA&app_code=tM5YcBFR0faZRyZbAWTAuQ', function(data) {
+                        var myLatlng = new google.maps.LatLng(data.Response.View[0].Result[0].Location.DisplayPosition.Latitude, data.Response.View[0].Result[0].Location.DisplayPosition.Longitude);
+                        var marker = new google.maps.Marker({
+                            position: myLatlng
+                        });
+                        marker.setMap(map);
+                        gmarker.push(marker);
+                        marker.addListener('click', function (event) {
+                            infowindow.close();
+                            infowindow.setContent(contentString);
+                            infowindow.open(map, marker);
+                        }).done(function (data) {
+
+                            $(".lds-ellipsis").css("display", "none"); // loading kaybolma
+                            $("#map").css("display", "block"); // harita ortamaya cıkma
+                        });
+
+                    })
+                    if (loopUrl[0] - 1 == z) {
+                        if (loopUrl[1] == y) {
+                            break;
+                        }
+                        y++;
+                    }
+                }
+            });
+        }
+        $("#map").css("display", "block");
+    }
+});
+//----------------------------------------------------------------------------------------------------------------------------------------
+    function paging(count) { // ilan 50 den küçük ise
+
+        var counter;
+        var totalCount = count % 50;
+        if (totalCount == 1) {
+            ext = "?pagingSize=50";
+        }
+        if (totalCount > 1) {
+            if (count < 50) {
+                ext = "?pagingSize=50";
+                counter = count % 50;
+                return counter;
+
+            }
+        }
+    }
+//----------------------------------------------------------------------------------------------------------------------------------------
+    function counterNumber(num) {   //İlan 50 den fazla ise 
+
+        var loop = [];
+        var numMod = num % 50;
+        var urlNum = num - numMod;
+        var totalCount = count % 50;
+        if (totalCount == 1) {
+            ext = "?pagingOffset=0&pagingSize=50";
+        }
+        if (totalCount > 1) {
+            if (count < 50) {
+                ext = "?pagingOffset=0&pagingSize=50";
+                counter = count % 50;
+                return loop;
+
+            }
+        }
+        if (numMod == 0) {
+            loop[0] = urlNum / 50;
+            return loop;
+
+        }
+        else {
+            loop[0] = (urlNum / 50) + 1;
+            loop[1] = numMod;
+            return loop;
+        }
+
+    }
+//----------------------------------------------------------------------------------------------------------------------------------------
+    function DeleteMarkers() { //Mevcut markerları yenı arama yapıldıgında sılmek ıcın
+        for (var x = 0; x < gmarker.length; x++) {
+            gmarker[x].setMap(null);
+        }
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------------
+    $("#filter").click(function () { //detay penceresini gösterir.
+        if (!$('#details').is(":visible")) {
+            $(".details").css("display", "block");
+        }
+        else
+         {
+            $(".details").css("display", "none");
+        }
+    })
+
+    //----------------------------------------------------------------------------------------------------------------------------------------
+    $("#map").click(function () {
+    
+        $(".details").css("display", "none"); // haritada bir yere tıklanırsa detay penceresı gizlensin.
+     
+    })
+    //----------------------------------------------------------------------------------------------------------------------------------------
+
+    function getFilter() {  //filtreleme 
+
+        String.prototype.replaceAll = function (search, replacement) { //Virgülleri yok etmek için kullanıldı.
+            var target = this;
+            return target.split(search).join(replacement);
+        };
+
+        var filter = [];
+        // secılı olan inputları id ye göre degerlerini al.
+        var color = $('#color').find('option:selected').val(); 
+        var sort = $('#sort').find('option:selected').val();
+        var yearmin = $('#yearmin').val();
+        var yearmax = $('#yearmax').val();
+        var kmmin = $('#kmmin').val();
+        var kmmax = $('#kmmax').val();
+        var pricemin = $('#pricemin').val();
+        var pricemax = $('#pricemax').val();
+        
+
+        if (color) {
+            if (color != "Tümü") {
+                filter.push("&" + color);
+            }
+        }
+        if (sort) {
+            if (sort != "Gelişmiş Sıralama") {
+                filter.push("&" + sort);
+            }
+        }
+        if (yearmin) {
+            filter.push("&a5_min=" + yearmin)
+        }
+        if (yearmax) {
+            filter.push("&a5_max=" + yearmax)
+        }
+        if (kmmin) {
+            filter.push("&a4_min=" + kmmin)
+        }
+        if (kmmax) {
+
+            filter.push("&a4_max=" + kmmax)
+        }
+        if (pricemin) {
+
+            filter.push("&price_min=" + pricemin)
+        }
+        if (pricemax) {
+
+            filter.push("&price_max=" + pricemax)
+        }
+      
+        
+        if (filter) {
+            var last = filter.join();
+            return last.replaceAll(",", "");
+        }
+       
+
+    }
+
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAY3ysS7_aNGxmZoRtiLhIcckzhUp-nwPA&callback=initMap"
+        async defer></script>
+
+
+
+
